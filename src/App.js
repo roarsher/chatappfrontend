@@ -2,7 +2,7 @@
  import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
  import { AuthProvider } from './context/AuthContext';
  import { SocketProvider } from './context/SocketContext';
- import { PrivateRoute, PublicRoute, AdminRoute } from './components/PrivateRoute';
+ import { PrivateRoute, PublicRoute} from './components/PrivateRoute';
  import LoginPage from './pages/LoginPage';
  import RegisterPage from './pages/RegisterPage';
  import ChatPage from './pages/ChatPage';

@@ -25,7 +25,7 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    const socket = io(process.env.REACT_APP_SERVER_URL || 'http://localhost:5000', {
+    const socket = io(process.env.REACT_APP_SERVER_URL || 'https://chatappbackend-4bim.onrender.com', {
       withCredentials: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
