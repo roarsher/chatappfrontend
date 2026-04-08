@@ -2,15 +2,18 @@
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
+// We import the memory token getter so the socket can authenticate
+// even when the HTTP-only cookie is blocked cross-domain
+let _getToken = null;
+export const registerTokenGetter = (fn) => { _getToken = fn; };
+
 const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
-  // Expose the ref itself so consumers always get the live socket instance
   const socketRef = useRef(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [connected, setConnected] = useState(false);
-  // Bump this counter whenever the socket instance changes so hooks re-subscribe
   const [socketVersion, setSocketVersion] = useState(0);
 
   useEffect(() => {
@@ -25,15 +28,19 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    const socket = io(process.env.REACT_APP_SERVER_URL || 'https://chatappbackend-4bim.onrender.com', {
+    // Get token from memory if available (cross-domain fallback)
+    const token = _getToken ? _getToken() : null;
+
+    const socket = io(process.env.REACT_APP_SERVER_URL || 'http://localhost:5000', {
       withCredentials: true,
+      auth: token ? { token } : {},   // Send token in handshake for socket auth
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
       transports: ['websocket'],
     });
 
     socketRef.current = socket;
-    setSocketVersion((v) => v + 1); // Notify consumers a new socket is ready
+    setSocketVersion((v) => v + 1);
 
     socket.on('connect', () => {
       console.log('Socket connected:', socket.id);
@@ -51,7 +58,6 @@ export const SocketProvider = ({ children }) => {
     });
 
     socket.on('onlineUsers', (userIds) => {
-      // Normalise to strings
       setOnlineUsers(userIds.map(String));
     });
 
@@ -69,11 +75,8 @@ export const SocketProvider = ({ children }) => {
     };
   }, [user]);
 
-  // Always compare as strings to avoid ObjectId vs string mismatch
   const isUserOnline = (userId) => userId ? onlineUsers.includes(String(userId)) : false;
 
-  // Expose socketRef so consumers read the live instance, plus socketVersion
-  // so they can re-run effects when the socket reconnects
   return (
     <SocketContext.Provider value={{ socketRef, connected, onlineUsers, isUserOnline, socketVersion }}>
       {children}
