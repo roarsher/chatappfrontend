@@ -214,55 +214,43 @@ body {
 
 /* ── Sidebar ─────────────────────────────────────────────────────── */
 .sidebar {
-  width: 100%;          /* Full-width on mobile */
   background: var(--bg-base);
   border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   flex-shrink: 0;
-
-  /* Mobile: sidebar is a full-screen drawer */
-  position: fixed;
+  /* Mobile: full-screen panel */
+  width: 100%;
+  position: absolute;
   inset: 0;
-  z-index: 200;
-  transform: translateX(0);
-  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  z-index: 10;
+  transition: transform 0.26s cubic-bezier(0.4,0,0.2,1);
   padding-top: var(--safe-top);
   padding-bottom: var(--safe-bottom);
 }
 
-/* Hidden when a chat is open on mobile */
-.sidebar.hidden-mobile {
+/* Hidden on mobile when chat is open */
+.sidebar--hidden {
   transform: translateX(-100%);
+  pointer-events: none;
 }
 
-/* Desktop: sidebar is a fixed 300px column */
+/* Desktop: fixed 300px column, always visible */
 @media (min-width: 768px) {
   .sidebar {
     position: relative;
     width: 300px;
     min-width: 300px;
     transform: none !important;
+    pointer-events: auto;
     z-index: auto;
     padding-top: 0;
     padding-bottom: 0;
   }
-}
-
-/* Overlay backdrop for mobile sidebar */
-.sidebar-backdrop {
-  display: none;
-}
-
-@media (max-width: 767px) {
-  .sidebar-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 199;
-    animation: fadeIn 0.2s ease;
+  .sidebar--hidden {
+    transform: none !important;
+    pointer-events: auto;
   }
 }
 
@@ -398,16 +386,37 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-width: 0; /* Prevent flex overflow */
-  height: 100dvh;
-  height: 100vh;
+  min-width: 0;
+  /* Mobile: also full-screen, positioned behind sidebar */
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  background: var(--bg-void);
+  transition: transform 0.26s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* On mobile, chat window takes full screen when a chat is selected */
-@media (max-width: 767px) {
+/* When sidebar is showing on mobile, slide chat window right out of view */
+.chat-window--hidden {
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+/* Desktop: normal flex child, no absolute positioning */
+@media (min-width: 768px) {
   .chat-window {
-    padding-top: var(--safe-top);
-    padding-bottom: var(--safe-bottom);
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    transform: none !important;
+    pointer-events: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .chat-window--hidden {
+    transform: none !important;
+    pointer-events: auto;
   }
 }
 
@@ -975,16 +984,4 @@ body {
   letter-spacing: 1px;
   color: rgba(255,255,255,0.7);
   text-transform: uppercase;
-}
-
-
-.message-input-area {
-  position: sticky;
-  bottom: 0;
-}
-.messages-area {
-  scroll-behavior: smooth;
-}
-.message {
-  font-size: max(16px, 14px);
 }
