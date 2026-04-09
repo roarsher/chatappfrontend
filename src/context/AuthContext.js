@@ -74,7 +74,7 @@
 
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import api, { setToken, clearToken, getToken } from '../utils/api';
+import api, { setToken, clearToken } from '../utils/api';
 
 const AuthContext = createContext(null);
 
