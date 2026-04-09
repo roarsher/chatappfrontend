@@ -125,16 +125,22 @@ export const SocketProvider = ({ children }) => {
     // Read token from sessionStorage — always fresh, even after page refresh
     const token = getToken();
 
-    const socket = io(SERVER_URL, {
-      withCredentials: true,
-      // Send token in handshake so socketAuth middleware can verify it
-      // when the HTTP-only cookie is blocked cross-domain
-      auth: { token: token || '' },
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1500,
-      transports: ['websocket', 'polling'], // polling fallback for restrictive networks
-    });
+    // const socket = io(SERVER_URL, {
+    //   withCredentials: true,
+    //   // Send token in handshake so socketAuth middleware can verify it
+    //   // when the HTTP-only cookie is blocked cross-domain
+    //   auth: { token: token || '' },
+    //   reconnectionAttempts: 10,
+    //   reconnectionDelay: 1500,
+    //   transports: ['websocket', 'polling'], // polling fallback for restrictive networks
+    // });
+const socket = io(SERVER_URL, {
+  withCredentials: true,
+  auth: { token: token || '' },
 
+  transports: ['websocket'], // FORCE production-safe
+  secure: true,              // REQUIRED for https (Render)
+});
     socketRef.current = socket;
     setSocketVersion((v) => v + 1);
 

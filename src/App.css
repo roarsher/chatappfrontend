@@ -976,3 +976,15 @@ body {
   color: rgba(255,255,255,0.7);
   text-transform: uppercase;
 }
+
+
+.message-input-area {
+  position: sticky;
+  bottom: 0;
+}
+.messages-area {
+  scroll-behavior: smooth;
+}
+.message {
+  font-size: max(16px, 14px);
+}
