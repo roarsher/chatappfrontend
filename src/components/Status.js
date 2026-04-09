@@ -5,7 +5,7 @@ export default function Status() {
   const [statuses, setStatuses] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/status", {
+    fetch("https://chatappbackend-4bim.onrender.com/api/status", {
       headers: {
         Authorization: localStorage.getItem("token"),
       },
@@ -22,7 +22,7 @@ export default function Status() {
         {statuses.map((s, i) => (
           <div key={i} className="status">
             <img
-              src={`http://localhost:5000/uploads/${s.image}`}
+              src={`https://chatappbackend-4bim.onrender.com/uploads/${s.image}`}
               alt="status"
             />
           </div>
